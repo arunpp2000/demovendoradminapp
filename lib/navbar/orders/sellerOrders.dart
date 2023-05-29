@@ -885,6 +885,9 @@ class _SellerOrdersState extends State<SellerOrders>with TickerProviderStateMixi
                                                     ['orderId'];
                                                     shipRocketOrderId =
                                                     b2bData[listViewIndex]
+
+
+
                                                     ['shipRocketOrderId'];
                                                     awbNumber = b2bData[listViewIndex]
                                                     ['awb_code'];
