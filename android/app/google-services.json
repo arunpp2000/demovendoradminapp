@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "569331202458",
+    "project_id": "thara-demo",
+    "storage_bucket": "thara-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569331202458:android:e2b49452d9c69691ba6223",
+        "android_client_info": {
+          "package_name": "com.example.tharademo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569331202458-8237vt6anvgk8nplatrjkvekarhg8bsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5Cd8hnjHSnh_8zRDsnCn6JcuIExsMSOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569331202458-8237vt6anvgk8nplatrjkvekarhg8bsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569331202458:android:470e4c228203e44eba6223",
+        "android_client_info": {
+          "package_name": "com.firstlogicmetalab.demovendoradminapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569331202458-8237vt6anvgk8nplatrjkvekarhg8bsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5Cd8hnjHSnh_8zRDsnCn6JcuIExsMSOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569331202458-8237vt6anvgk8nplatrjkvekarhg8bsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
