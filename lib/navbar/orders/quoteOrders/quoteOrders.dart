@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
+import '../../../globals/colors.dart';
+import '../../../login/splashscreen.dart';
+
 
 class QuoteOrders extends StatefulWidget {
   const QuoteOrders({Key? key}) : super(key: key);

@@ -63,6 +63,9 @@ dependencies:
   file_picker:
   multi_image_picker:
   video_player:
+  http:
+  fl_chart:
+  flick_video_player: 
 
 dev_dependencies:
   flutter_test:

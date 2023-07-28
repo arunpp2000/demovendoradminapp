@@ -1,32 +1,25 @@
 import 'dart:io';
-
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../globals/colors.dart';
-
 import '../model/brandModel.dart';
-import '../model/usermodel.dart';
-import '../navbar/tabbarview/seller_dashboard.dart';
-
+import '../widgets/customButton.dart';
 import '../widgets/uploadmedia.dart';
 import 'Edit.dart';
-import 'brandRequest.dart';
+import 'editbrand.dart';
+
 
 class BrandViewPage extends StatefulWidget {
   AddBrand? brandData;
 
-  var id;
+  final String id;
 
-  BrandViewPage({Key? key, this.id});
+  BrandViewPage({Key? key, required this.id});
 
   @override
   State<BrandViewPage> createState() => _BrandViewPageState();
@@ -66,7 +59,6 @@ class _BrandViewPageState extends State<BrandViewPage> {
 //          'commissionPer':0,
 //          'couponColorCode':'',
 //
-//
 //         });
 //       }
 //     });
@@ -81,7 +73,6 @@ class _BrandViewPageState extends State<BrandViewPage> {
   TextEditingController percentage = TextEditingController();
   TextEditingController YoutubeVideoUrl = TextEditingController();
   TextEditingController commissionPer = TextEditingController();
-
   List<String> commision = ["percentage %", "Amount"];
 
   List galaryimageUrl = [];
@@ -213,6 +204,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
 
   @override
   void initState() {
+
     super.initState();
   }
 
@@ -237,7 +229,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                 ),
                 Container(
                   width: w,
-                  height: h * 0.83,
+                  height: h * 0.80,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(w * 0.025),
                       color: Colors.white,
@@ -252,11 +244,11 @@ class _BrandViewPageState extends State<BrandViewPage> {
                     initialIndex: selectedIndex,
                     child: SingleChildScrollView(
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          // crossAxisAlignment: CrossAxisAlignment.,
                           children: [
                             Container(
                               height: h * 0.05,
-                              width: w * 0.98,
+                              width: w * 0.92,
                               decoration: BoxDecoration(
                                   color: primaryColor,
                                   borderRadius: const BorderRadius.only(
@@ -279,7 +271,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                               ),
                             ),
                             SizedBox(
-                              height: h * 2,
+                              height: h * 5,
                               width: double.maxFinite,
                               child: TabBarView(
                                 children: [
@@ -298,24 +290,30 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                           if (!snapshot.hasData) {
                                             return Center(
                                                 child:
-                                                    CircularProgressIndicator());
+                                                CircularProgressIndicator());
                                           }
+                                          String? link;
                                           var data = snapshot.data;
+                                          try{
+                                           link =  data!['youTube'][0]['link'];
+                                          }catch(e){
+                                            link='';
+
+                                          }
                                           brandName.text = data!['brand'];
                                           brandtitle.text = data!['head'];
-                                          couponCode.text =
-                                              data!['couponColorCode'];
-                                          contentDetails.text =
-                                              data!['content'];
+                                          YoutubeVideoUrl.text = link!;
+                                          couponCode.text = data!['color'];
+                                          contentDetails.text = data!['content'];
                                           for (var a in data['imageList']) {
                                             downloadUrls.add(a);
                                           }
-                                          for (var a in data['galaryimage']) {
+                                          for (var a in data['galleryImage']) {
                                             galaryImagesUrls.add(a);
                                           }
                                           return Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               Text("Brand Logo",
                                                   style: GoogleFonts.roboto(
@@ -344,15 +342,15 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       height: h * 0.13,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    12)),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                12)),
                                                         color:
-                                                            Color(0xffE9E9E9),
+                                                        Color(0xffE9E9E9),
                                                       ),
                                                       child: CachedNetworkImage(
                                                         imageUrl:
-                                                            data!['imageUrl'],
+                                                        data!['imageUrl'],
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -373,15 +371,15 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                     decoration: BoxDecoration(
                                                         gradient: gradient,
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    10))),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10))),
                                                     child: Center(
                                                         child: Text(
-                                                      "Upload Brand Logo",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )),
+                                                          "Upload Brand Logo",
+                                                          style: TextStyle(
+                                                              color: Colors.white),
+                                                        )),
                                                   ),
                                                 ),
                                               ),
@@ -394,7 +392,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       textStyle: TextStyle(
                                                           fontSize: w * 0.030,
                                                           color:
-                                                              primaryColor1))),
+                                                          primaryColor1))),
                                               SizedBox(
                                                 height: h * 0.013,
                                               ),
@@ -425,15 +423,15 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       height: h * 0.12,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    12)),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                12)),
                                                         color:
-                                                            Color(0xffE9E9E9),
+                                                        Color(0xffE9E9E9),
                                                       ),
                                                       child: CachedNetworkImage(
                                                         imageUrl:
-                                                            data!['banner'],
+                                                        data!['banner'],
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -454,15 +452,15 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                     decoration: BoxDecoration(
                                                         gradient: gradient,
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    10))),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10))),
                                                     child: Center(
                                                         child: Text(
-                                                      "Upload Banner",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )),
+                                                          "Upload Banner",
+                                                          style: TextStyle(
+                                                              color: Colors.white),
+                                                        )),
                                                   ),
                                                 ),
                                               ),
@@ -475,7 +473,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       textStyle: TextStyle(
                                                           fontSize: w * 0.030,
                                                           color:
-                                                              primaryColor1))),
+                                                          primaryColor1))),
                                               SizedBox(
                                                 height: h * 0.015,
                                               ),
@@ -485,19 +483,19 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                   controller: brandName,
                                                   decoration: InputDecoration(
                                                       enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color:
-                                                                      Color.fromARGB(
-                                                                          255,
-                                                                          0,
-                                                                          0,
-                                                                          0))),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color:
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  0,
+                                                                  0,
+                                                                  0))),
                                                       focusedBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .black)),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color: Colors
+                                                                  .black)),
                                                       suffixStyle: TextStyle(
                                                           color: Colors.red),
                                                       labelText: "Brand name",
@@ -520,23 +518,23 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                   controller: brandtitle,
                                                   decoration: InputDecoration(
                                                       enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color:
-                                                                      Color.fromARGB(
-                                                                          255,
-                                                                          0,
-                                                                          0,
-                                                                          0))),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color:
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  0,
+                                                                  0,
+                                                                  0))),
                                                       focusedBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .black)),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color: Colors
+                                                                  .black)),
                                                       suffixStyle: TextStyle(
                                                           color: Colors.red),
                                                       labelText:
-                                                          "Brand Page Title/Head",
+                                                      "Brand Page Title/Head",
                                                       labelStyle: GoogleFonts.roboto(
                                                           textStyle: TextStyle(
                                                               fontSize: w * 0.025,
@@ -556,23 +554,23 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                   controller: couponCode,
                                                   decoration: InputDecoration(
                                                       enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color:
-                                                                      Color.fromARGB(
-                                                                          255,
-                                                                          0,
-                                                                          0,
-                                                                          0))),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color:
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  0,
+                                                                  0,
+                                                                  0))),
                                                       focusedBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .black)),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color: Colors
+                                                                  .black)),
                                                       suffixStyle: TextStyle(
                                                           color: Colors.red),
                                                       labelText:
-                                                          "Coupon Color Code",
+                                                      "Coupon Color Code",
                                                       labelStyle: GoogleFonts.roboto(
                                                           textStyle: TextStyle(
                                                               fontSize: w * 0.025,
@@ -592,23 +590,23 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                   controller: contentDetails,
                                                   decoration: InputDecoration(
                                                       enabledBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color:
-                                                                      Color.fromARGB(
-                                                                          255,
-                                                                          0,
-                                                                          0,
-                                                                          0))),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color:
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  0,
+                                                                  0,
+                                                                  0))),
                                                       focusedBorder:
-                                                          UnderlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .black)),
+                                                      UnderlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                              color: Colors
+                                                                  .black)),
                                                       suffixStyle: TextStyle(
                                                           color: Colors.red),
                                                       labelText:
-                                                          "Content/Details",
+                                                      "Content/Details",
                                                       labelStyle: GoogleFonts.roboto(
                                                           textStyle: TextStyle(
                                                               fontSize: w * 0.025,
@@ -626,7 +624,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       textStyle: TextStyle(
                                                           fontSize: w * 0.035,
                                                           color:
-                                                              Colors.black))),
+                                                          Colors.black))),
                                               SizedBox(
                                                 height: h * 0.020,
                                               ),
@@ -641,8 +639,8 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                               ),
                                               Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                                 children: [
                                                   Container(
                                                     width: w * 0.55,
@@ -650,13 +648,13 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       controller: featureName,
                                                       //controller: ,
                                                       decoration:
-                                                          InputDecoration(
+                                                      InputDecoration(
                                                         hintText:
-                                                            "Enter feature Name",
+                                                        "Enter feature Name",
                                                         hintStyle: GoogleFonts.roboto(
                                                             textStyle: TextStyle(
                                                                 fontSize:
-                                                                    w * 0.030,
+                                                                w * 0.030,
                                                                 color: Colors
                                                                     .black)),
                                                         suffixText: "*",
@@ -690,23 +688,23 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       height: h * 0.047,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    8)),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                8)),
                                                         gradient:
-                                                            LinearGradient(
-                                                                colors: [
+                                                        LinearGradient(
+                                                            colors: [
                                                               Color(0xff8C31FF),
                                                               Color(0xff601AB9)
                                                             ]),
                                                       ),
                                                       child: Center(
                                                           child: Text(
-                                                        "Upload",
-                                                        style: TextStyle(
-                                                            color:
+                                                            "Upload",
+                                                            style: TextStyle(
+                                                                color:
                                                                 Colors.white),
-                                                      )),
+                                                          )),
                                                     ),
                                                   ),
                                                 ],
@@ -714,103 +712,103 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                               SizedBox(height: h * 0.025),
                                               Padding(
                                                 padding:
-                                                    EdgeInsets.all(w * 0.02),
+                                                EdgeInsets.all(w * 0.02),
                                                 child: Container(
                                                   height: h * 0.15,
                                                   child: GridView.builder(
                                                       physics: ScrollPhysics(),
                                                       itemCount:
-                                                          downloadUrls.length,
+                                                      downloadUrls.length,
                                                       shrinkWrap: true,
                                                       gridDelegate:
-                                                          SliverGridDelegateWithMaxCrossAxisExtent(
-                                                              maxCrossAxisExtent:
-                                                                  w * 0.5,
-                                                              mainAxisExtent:
-                                                                  h * 0.15,
-                                                              childAspectRatio:
-                                                                  2 / 2,
-                                                              crossAxisSpacing:
-                                                                  w * 0.03,
-                                                              mainAxisSpacing:
-                                                                  h * 0.01),
+                                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                                          maxCrossAxisExtent:
+                                                          w * 0.5,
+                                                          mainAxisExtent:
+                                                          h * 0.15,
+                                                          childAspectRatio:
+                                                          2 / 2,
+                                                          crossAxisSpacing:
+                                                          w * 0.03,
+                                                          mainAxisSpacing:
+                                                          h * 0.01),
                                                       itemBuilder:
                                                           (BuildContext context,
-                                                              index) {
+                                                          index) {
                                                         return downloadUrls
-                                                                .isNotEmpty
+                                                            .isNotEmpty
                                                             ? Stack(
-                                                                clipBehavior:
-                                                                    Clip.none,
+                                                            clipBehavior:
+                                                            Clip.none,
+                                                            children: [
+                                                              Column(
                                                                 children: [
-                                                                    Column(
-                                                                      children: [
-                                                                        Padding(
-                                                                          padding: const EdgeInsets.only(
-                                                                              top: 10,
-                                                                              right: 10),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                w * 0.400,
-                                                                            height:
-                                                                                h * 0.1,
-                                                                            decoration:
-                                                                                BoxDecoration(color: Colors.white, image: DecorationImage(image: NetworkImage(downloadUrls[index]["link"]), fit: BoxFit.fill)),
-                                                                            // child: Image.file(
-                                                                            //         File(featureimages[index]
-                                                                            //             .path),
-                                                                            //         fit: BoxFit.fill,
-                                                                            // ),
-                                                                          ),
-                                                                        ),
-                                                                        Text(
-                                                                          downloadUrls[index]
-                                                                              [
-                                                                              "name"],
-                                                                          style:
-                                                                              TextStyle(color: Colors.black),
-                                                                        )
-                                                                      ],
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.only(
+                                                                        top: 10,
+                                                                        right: 10),
+                                                                    child:
+                                                                    Container(
+                                                                      width:
+                                                                      w * 0.400,
+                                                                      height:
+                                                                      h * 0.1,
+                                                                      decoration:
+                                                                      BoxDecoration(color: Colors.white, image: DecorationImage(image: NetworkImage(downloadUrls[index]["link"]), fit: BoxFit.fill)),
+                                                                      // child: Image.file(
+                                                                      //         File(featureimages[index]
+                                                                      //             .path),
+                                                                      //         fit: BoxFit.fill,
+                                                                      // ),
                                                                     ),
-                                                                    Positioned(
-                                                                      left: w *
-                                                                          0.25,
-                                                                      bottom: h *
-                                                                          0.115,
-                                                                      child:
-                                                                          InkWell(
-                                                                        onTap:
-                                                                            () {
-                                                                          downloadUrls
-                                                                              .removeAt(index);
-                                                                          setState(
-                                                                              () {});
-                                                                        },
-                                                                        child:
-                                                                            Container(
-                                                                          width:
-                                                                              w * 0.2,
-                                                                          height:
-                                                                              h * 0.035,
-                                                                          child:
-                                                                              const Icon(
-                                                                            Icons.clear,
-                                                                            color: Color.fromARGB(
-                                                                                255,
-                                                                                254,
-                                                                                253,
-                                                                                255),
-                                                                            size:
-                                                                                20,
-                                                                          ),
-                                                                          decoration: const BoxDecoration(
-                                                                              color: Color(0xff8C31FF),
-                                                                              shape: BoxShape.circle),
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  ])
+                                                                  ),
+                                                                  Text(
+                                                                    downloadUrls[index]
+                                                                    [
+                                                                    "name"],
+                                                                    style:
+                                                                    TextStyle(color: Colors.black),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              Positioned(
+                                                                left: w *
+                                                                    0.25,
+                                                                bottom: h *
+                                                                    0.115,
+                                                                child:
+                                                                InkWell(
+                                                                  onTap:
+                                                                      () {
+                                                                    downloadUrls
+                                                                        .removeAt(index);
+                                                                    setState(
+                                                                            () {});
+                                                                  },
+                                                                  child:
+                                                                  Container(
+                                                                    width:
+                                                                    w * 0.2,
+                                                                    height:
+                                                                    h * 0.035,
+                                                                    child:
+                                                                    const Icon(
+                                                                      Icons.clear,
+                                                                      color: Color.fromARGB(
+                                                                          255,
+                                                                          254,
+                                                                          253,
+                                                                          255),
+                                                                      size:
+                                                                      20,
+                                                                    ),
+                                                                    decoration: const BoxDecoration(
+                                                                        color: Color(0xff8C31FF),
+                                                                        shape: BoxShape.circle),
+                                                                  ),
+                                                                ),
+                                                              )
+                                                            ])
                                                             : SizedBox();
                                                         // Stack(
                                                         //     clipBehavior: Clip.none,
@@ -878,41 +876,41 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                 child: GridView.builder(
                                                     physics: ScrollPhysics(),
                                                     itemCount:
-                                                        galaryImagesUrls.length,
+                                                    galaryImagesUrls.length,
                                                     shrinkWrap: true,
                                                     gridDelegate:
-                                                        SliverGridDelegateWithMaxCrossAxisExtent(
-                                                            maxCrossAxisExtent:
-                                                                w * 0.6,
-                                                            mainAxisExtent:
-                                                                h * 0.15,
-                                                            childAspectRatio:
-                                                                2 / 2,
-                                                            crossAxisSpacing:
-                                                                w * 0.03,
-                                                            mainAxisSpacing:
-                                                                h * 0.03),
+                                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                                        maxCrossAxisExtent:
+                                                        w * 0.6,
+                                                        mainAxisExtent:
+                                                        h * 0.15,
+                                                        childAspectRatio:
+                                                        2 / 2,
+                                                        crossAxisSpacing:
+                                                        w * 0.03,
+                                                        mainAxisSpacing:
+                                                        h * 0.03),
                                                     itemBuilder:
                                                         (BuildContext context,
-                                                            index) {
+                                                        index) {
                                                       return Stack(
                                                           clipBehavior:
-                                                              Clip.none,
+                                                          Clip.none,
                                                           children: [
                                                             Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      top: 10,
-                                                                      left: 10),
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  top: 10,
+                                                                  left: 10),
                                                               child: Container(
                                                                 width:
-                                                                    w * 0.400,
+                                                                w * 0.400,
                                                                 height: h * 100,
                                                                 decoration: BoxDecoration(
                                                                     image: DecorationImage(
                                                                         image: NetworkImage(galaryImagesUrls[
-                                                                            index]),
+                                                                        index]),
                                                                         fit: BoxFit
                                                                             .fill)),
                                                                 // child: Image.file(
@@ -928,27 +926,27 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                                 onTap: () {
                                                                   galaryImagesUrls
                                                                       .removeAt(
-                                                                          index);
+                                                                      index);
                                                                   // productImages.removeAt(2);
                                                                   //  image1 = null;
                                                                   setState(
-                                                                      () {});
+                                                                          () {});
                                                                 },
                                                                 child:
-                                                                    Container(
+                                                                Container(
                                                                   width:
-                                                                      w * 0.2,
+                                                                  w * 0.2,
                                                                   height:
-                                                                      h * 0.035,
+                                                                  h * 0.035,
                                                                   child:
-                                                                      const Icon(
+                                                                  const Icon(
                                                                     Icons.clear,
                                                                     color: Color
                                                                         .fromARGB(
-                                                                            255,
-                                                                            254,
-                                                                            253,
-                                                                            255),
+                                                                        255,
+                                                                        254,
+                                                                        253,
+                                                                        255),
                                                                     size: 20,
                                                                   ),
                                                                   decoration: const BoxDecoration(
@@ -976,15 +974,15 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                     decoration: BoxDecoration(
                                                         gradient: gradient,
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    10))),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                10))),
                                                     child: Center(
                                                         child: Text(
-                                                      "Upload ",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )),
+                                                          "Upload ",
+                                                          style: TextStyle(
+                                                              color: Colors.white),
+                                                        )),
                                                   ),
                                                 ),
                                               ),
@@ -998,7 +996,7 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                         fontSize: w * 0.025,
                                                         color: Colors.black,
                                                         fontWeight:
-                                                            FontWeight.bold)),
+                                                        FontWeight.bold)),
                                               ),
                                               SizedBox(
                                                 height: h * 0.012,
@@ -1014,22 +1012,22 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                               ),
                                               Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                                 children: [
                                                   Container(
                                                     width: w * 0.5,
                                                     child: TextFormField(
                                                       controller:
-                                                          YoutubeVideoUrl,
+                                                      YoutubeVideoUrl,
                                                       decoration:
-                                                          InputDecoration(
+                                                      InputDecoration(
                                                         hintText:
-                                                            "Enter Video Url",
+                                                        "Enter Video Url",
                                                         hintStyle: GoogleFonts.roboto(
                                                             textStyle: TextStyle(
                                                                 fontSize:
-                                                                    w * 0.025,
+                                                                w * 0.025,
                                                                 color: Colors
                                                                     .grey
                                                                     .shade400)),
@@ -1045,8 +1043,8 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                           .text.isNotEmpty) {
                                                         youtubelink.add({
                                                           "link":
-                                                              YoutubeVideoUrl
-                                                                  .text,
+                                                          YoutubeVideoUrl
+                                                              .text,
                                                           "thumbnail": "",
                                                         });
                                                         showUploadMessage(
@@ -1063,23 +1061,23 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                                       height: h * 0.047,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    8)),
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                8)),
                                                         gradient:
-                                                            LinearGradient(
-                                                                colors: [
+                                                        LinearGradient(
+                                                            colors: [
                                                               Color(0xff8C31FF),
                                                               Color(0xff601AB9)
                                                             ]),
                                                       ),
                                                       child: Center(
                                                           child: Text(
-                                                        "Upload",
-                                                        style: TextStyle(
-                                                            color:
+                                                            "Upload",
+                                                            style: TextStyle(
+                                                                color:
                                                                 Colors.white),
-                                                      )),
+                                                          )),
                                                     ),
                                                   ),
                                                 ],
@@ -1101,171 +1099,101 @@ class _BrandViewPageState extends State<BrandViewPage> {
                                               ),
                                               data['status'] == 0
                                                   ? Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                          TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              bool pressed =
-                                                                  await alert(
-                                                                      context,
-                                                                      'Do you want accept this brand.');
-                                                              if (pressed) {
-                                                                data.reference
-                                                                    .update({
-                                                                  'status': 1,
-                                                                  'acceptedDate': DateTime.now()
-                                                                });
-                                                                showUploadMessage(
-                                                                    context,
-                                                                    'Accepted');
-                                                                Navigator.pop(context);
-                                                              }
-                                                            },
-                                                            child: Container(
-                                                              width: w / 2.7,
-                                                              height: h * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  color:
-                                                                      primaryColor,
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              10))),
-                                                              child: Center(
-                                                                  child: Text(
-                                                                "Accept ",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )),
-                                                            ),
-                                                          ),
-                                                          TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              bool pressed =
-                                                                  await alert(
-                                                                      context,
-                                                                      'Do you want reject this brand.');
-                                                              if (pressed) {
-                                                                data.reference
-                                                                    .update({
-                                                                  'status': 2,
-                                                                  'rejectedDate': DateTime.now()
-                                                                });
-                                                                showUploadMessage(
-                                                                    context,'Do you want reject this brand?');
-                                                                    Navigator.pop(context);                                                              }
-                                                            },
-                                                            child: Container(
-                                                              width: w / 2.7,
-                                                              height: h * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              10))),
-                                                              child: Center(
-                                                                  child: Text(
-                                                                "Reject",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )),
-                                                            ),
-                                                          ),
-                                                        ])
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceEvenly,
+                                                  children: [
+                                                    CustomButton(text: 'Approve', onPressed: () async {
+                                                      bool pressed =
+                                                      await alert(
+                                                          context,
+                                                          'Do you want accept this category.');
+                                                      if (pressed) {
+                                                        data.reference
+                                                            .update({
+                                                          'status': 1,
+                                                          'acceptedDate':
+                                                          DateTime
+                                                              .now()
+                                                        });
+                                                        showUploadMessage(
+                                                            context,
+                                                            'Accepted');
+                                                        Navigator.pop(
+                                                            context);
+                                                      }
+                                                    }, color: primaryColor,),
+                                                    CustomButton(text: 'Reject', onPressed: () async {
+                                                      bool pressed =
+                                                      await alert(
+                                                          context,
+                                                          'Do you want reject this category.');
+                                                      if (pressed) {
+                                                        data.reference
+                                                            .update({
+                                                          'status': 2,
+                                                          'rejectedDate':
+                                                          DateTime
+                                                              .now()
+                                                        });
+                                                        showUploadMessage(
+                                                            context,
+                                                            'Accepted');
+                                                        Navigator.pop(
+                                                            context);
+                                                      }
+                                                    }, color: Colors.red,),
+                                                  ])
                                                   : data['status'] == 1
-                                                      ? Center(
-                                                          child: TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              bool pressed =
-                                                                  await alert(
-                                                                      context,
-                                                                      'Do you want reject this brand?.');
-                                                              if (pressed) {
-                                                                data.reference
-                                                                    .update({
-                                                                  'status': 2,
-                                                                  'rejectedDate': DateTime.now()
-                                                                });
-                                                                showUploadMessage(
-                                                                    context,
-                                                                    'Rejected');
-                                                                Navigator.pop(context);
-                                                              }
-                                                            },
-                                                            child: Container(
-                                                              width: w / 1.5,
-                                                              height: h * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              10))),
-                                                              child: Center(
-                                                                  child: Text(
-                                                                "Reject",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )),
-                                                            ),
-                                                          ),
-                                                        )
-                                                      : Center(
-                                                          child: TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              bool pressed =
-                                                                  await alert(
-                                                                      context,
-                                                                      'Do you want accept this brand?.');
-                                                              if (pressed) {
-                                                                data.reference
-                                                                    .update({
-                                                                  'status': 1,
-                                                                  'approvedDate':DateTime.now()
-                                                                });
-                                                                showUploadMessage(
-                                                                    context,
-                                                                    'Accepted');
-                                                                Navigator.pop(context);
-                                                              }
-                                                            },
-                                                            child: Container(
-                                                              width: w / 2,
-                                                              height: h * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  color:
-                                                                      primaryColor,
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              10))),
-                                                              child: Center(
-                                                                  child: Text(
-                                                                "Accept ",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white),
-                                                              )),
-                                                            ),
-                                                          ),
-                                                        ),
+                                                  ? Center(
+                                                child: CustomButton(text: 'Reject', onPressed: () async {
+                                                  bool pressed =
+                                                  await alert(
+                                                      context,
+                                                      'Do you want reject this category.');
+                                                  if (pressed) {
+                                                    data.reference
+                                                        .update({
+                                                      'status': 2,
+                                                      'rejectedDate':
+                                                      DateTime
+                                                          .now()
+                                                    });
+                                                    showUploadMessage(
+                                                        context,
+                                                        'Accepted');
+                                                    Navigator.pop(
+                                                        context);
+                                                  }
+                                                }, color: Colors.red,),
+                                              )
+                                                  : Center(
+                                                child:  CustomButton(text: 'Approve', onPressed: () async {
+                                                  bool pressed =
+                                                  await alert(
+                                                      context,
+                                                      'Do you want accept this category.');
+                                                  if (pressed) {
+                                                    data.reference
+                                                        .update({
+                                                      'status': 1,
+                                                      'acceptedDate':
+                                                      DateTime
+                                                          .now()
+                                                    });
+                                                    showUploadMessage(
+                                                        context,
+                                                        'Accepted');
+                                                    Navigator.pop(
+                                                        context);
+                                                  }
+                                                }, color: primaryColor,),
+                                              ),
                                             ],
                                           );
                                         }),
                                   ),
-                                  Edit(),
+                                  EditBrand(id:widget.id)
                                 ],
                               ),
                             ),

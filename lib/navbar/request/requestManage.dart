@@ -1,13 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demovendoradminapp/navbar/request/productRequest.dart';
 import 'package:demovendoradminapp/navbar/request/sellerRequests.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-
-
 import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
+import '../../login/splashscreen.dart';
+import '../Navbar.dart';
 
 class ManageRequest extends StatefulWidget {
   const ManageRequest({Key? key}) : super(key: key);
@@ -17,6 +18,46 @@ class ManageRequest extends StatefulWidget {
 }
 
 class _ManageRequestState extends State<ManageRequest> {
+  int sellerPendingLength = 0;
+  int productPendingLength = 0;
+  getSellerRequest() {
+    FirebaseFirestore.instance
+        .collection('vendor')
+        .where('status', isEqualTo: 0)
+        .snapshots()
+        .listen((event) {
+      print('count');
+      sellerPendingLength = event.docs.length;
+      print(sellerPendingLength);
+
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  getPendingProduct() {
+    FirebaseFirestore.instance
+        .collection('products')
+        .where('status', isEqualTo: 0)
+        .snapshots()
+        .listen((event) {
+      print('count');
+      productPendingLength = event.docs.length;
+
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getSellerRequest();
+    getPendingProduct();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +141,7 @@ class _ManageRequestState extends State<ManageRequest> {
                           height: h * 0.02,
                         ),
                         ListTile(
-                          trailing:   Container(
+                          trailing: Container(
                             height: h * 0.050,
                             width: w * 0.150,
                             decoration: BoxDecoration(
@@ -108,11 +149,11 @@ class _ManageRequestState extends State<ManageRequest> {
                                 color: primaryColor),
                             child: Center(
                                 child: Text(
-                                  "45",
-                                  style: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                          fontSize: h * 0.02, color: Colors.white)),
-                                )),
+                              "0",
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
                           ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/1RTO.svg",
@@ -125,6 +166,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/2B2B.svg",
                             color: primaryColor,
@@ -136,6 +191,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              sellerPendingLength.toString(),
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/3SELL.svg",
                             color: primaryColor,
@@ -143,10 +212,27 @@ class _ManageRequestState extends State<ManageRequest> {
                           ),
                           title: Text("Seller Requests"),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>SellerRequests()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SellerRequests()));
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/4REF.svg",
                             color: primaryColor,
@@ -158,6 +244,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/5AFF.svg",
                             color: primaryColor,
@@ -169,6 +269,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              productPendingLength.toString(),
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/6PRO.svg",
                             color: primaryColor,
@@ -176,10 +290,28 @@ class _ManageRequestState extends State<ManageRequest> {
                           ),
                           title: Text("Product Approval"),
                           onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductRequest()));
                             //action on press
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/7BRD.svg",
                             color: primaryColor,
@@ -191,6 +323,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/8CAM.svg",
                             color: primaryColor,
@@ -202,6 +348,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/9DEA.svg",
                             color: primaryColor,
@@ -213,6 +373,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/10REF.svg",
                             color: primaryColor,
@@ -224,6 +398,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/11SUP.svg",
                             color: primaryColor,
@@ -235,6 +423,20 @@ class _ManageRequestState extends State<ManageRequest> {
                           },
                         ),
                         ListTile(
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
                           leading: SvgPicture.asset(
                             "assets/drawerManageRequest/12QOU.svg",
                             color: primaryColor,
@@ -264,16 +466,52 @@ class _ManageRequestState extends State<ManageRequest> {
                           height: h * 0.02,
                         ),
                         ListTile(
-                          leading: SvgPicture.asset("assets/drawerAdminSection/2sup.svg",color:primaryColor,height: h*0.03,),
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
+                          leading: SvgPicture.asset(
+                            "assets/drawerAdminSection/2sup.svg",
+                            color: primaryColor,
+                            height: h * 0.03,
+                          ),
                           title: Text("Support"),
-                          onTap: (){
+                          onTap: () {
                             //action on press
                           },
                         ),
                         ListTile(
-                          leading: SvgPicture.asset("assets/drawerAdminSection/3dis.svg",color:primaryColor,height: h*0.03,),
+                          trailing: Container(
+                            height: h * 0.050,
+                            width: w * 0.150,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: primaryColor),
+                            child: Center(
+                                child: Text(
+                              '0',
+                              style: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                      fontSize: h * 0.02, color: Colors.white)),
+                            )),
+                          ),
+                          leading: SvgPicture.asset(
+                            "assets/drawerAdminSection/3dis.svg",
+                            color: primaryColor,
+                            height: h * 0.03,
+                          ),
                           title: Text("Disputes"),
-                          onTap: (){
+                          onTap: () {
                             //action on press
                           },
                         ),

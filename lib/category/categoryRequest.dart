@@ -1,92 +1,88 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../category/cateogryTab.dart';
+import 'package:intl/intl.dart';
 import '../globals/colors.dart';
-import '../main.dart';
-import '../model/brandModel.dart';
+import '../model/cateogryModel.dart';
 import '../model/usermodel.dart';
-import '../navbar/tabbarview/seller_dashboard.dart';
-import 'AddBrand.dart';
-import 'Edit.dart';
-import 'brandViewPage.dart';
-import 'brands.dart';
-class Approvedlist extends StatefulWidget {
-  AddBrand? brandData;
+import 'addCategory.dart';
+import 'categoryDetails.dart';
 
 
 
-  Approvedlist({Key? key, this.brandData});
-
+class CategoryRequest extends StatefulWidget {
+  AddCategory? CategoryData;
+  CategoryRequest({Key? key, this.CategoryData});
   @override
-  State<Approvedlist> createState() => _ApprovedlistState();
+  State<CategoryRequest> createState() => _CategoryRequestState();
 }
 
-class _ApprovedlistState extends State<Approvedlist> {
-  TextEditingController search = TextEditingController();
-  Stream<List<AddBrand>> getBrands() => FirebaseFirestore.instance
-      .collection('brands')
-      .where('delete', isEqualTo: false)
-      .where('status', isEqualTo: 1)
-      .orderBy('acceptedDate',descending: true)
-      .snapshots()
-      .map((snapshot) =>
-      snapshot.docs.map((doc) => AddBrand.fromJson(doc.data())).toList());
-  Stream<List<AddBrand>> getSearchBrands() => FirebaseFirestore.instance
-      .collection('brands')
-      .where('delete', isEqualTo: false)
-      .where('status', isEqualTo: 1).where('search',arrayContains: search.text.toUpperCase())
-      .snapshots()
-      .map((snapshot) =>
-      snapshot.docs.map((doc) => AddBrand.fromJson(doc.data())).toList());
-  int brandRef=0;
-  getBrandRef(){
-    FirebaseFirestore.instance.collection('settings').doc('referenceNo').get().then((value) {
-      brandRef=value['brandRef'];
-      if(mounted){
-        setState(() {
-        });
-      }
-    });
-  }
+class _CategoryRequestState extends State<CategoryRequest> {
+
+
+  TextEditingController searchController =TextEditingController();
+
+  Stream<List<Category>> getCategory() =>
+      FirebaseFirestore.instance
+          .collection('category').where('status',isEqualTo: 0)
+          .where('delete', isEqualTo: false).orderBy('date')
+          .snapshots()
+          .map((snapshot) =>
+          snapshot.docs.map((doc) => Category.fromJson(doc.data())).toList());
+  Stream<List<Category>> getSearchCategory() =>
+      FirebaseFirestore.instance
+          .collection('category').where('status',isEqualTo: 0)
+          .where('delete', isEqualTo: false)
+          .where('search',arrayContains:searchController.text.toUpperCase())
+          .snapshots()
+          .map((snapshot) =>
+          snapshot.docs.map((doc) => Category.fromJson(doc.data())).toList());
   Map sellerName={};
   Map sellerId={};
   getSellerName(){
     FirebaseFirestore.instance.collection('vendor').get().then((value){
-
       for(DocumentSnapshot a in value.docs){
         sellerName[a.id]=a.get('name');
       }
+      setState(() {
 
+      });
     });
   }
-
   @override
   void initState() {
-
+    // TODO: implement initState
     super.initState();
-    getBrandRef();
     getSellerName();
   }
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    searchController.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    var h = MediaQuery.of(context).size.height;
-    var w = MediaQuery.of(context).size.width;
+    var h = MediaQuery
+        .of(context)
+        .size
+        .height;
+    var w = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(children: [
+
           Padding(
             padding:
             EdgeInsets.only(top: h * 0.02, left: w * 0.04, right: w * 0.04),
             child: Column(children: [
-
               SizedBox(
                 height: h * 0.01,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     height: h * 0.04,
@@ -97,8 +93,8 @@ class _ApprovedlistState extends State<Approvedlist> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Center(
                       child: TextFormField(
-                        controller: search,
-                        onFieldSubmitted: (v){
+                        controller: searchController,
+                        onChanged: (v){
                           setState(() {
 
                           });
@@ -106,7 +102,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                         decoration: InputDecoration(
                           hintStyle: TextStyle(
                               fontSize: w * 0.030, color: Colors.black),
-                          hintText: 'Search Product',
+                          hintText: 'Search Category',
                           contentPadding: EdgeInsets.only(top: 1),
                           prefixIcon: Icon(
                             Icons.search,
@@ -148,7 +144,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                 ],
               ),
               SizedBox(
-                height: h * 0.02,
+                height: h * 0.01,
               ),
               Container(
                 width: w,
@@ -171,7 +167,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text("Approved List",
+                        Text("Category Approval",
                             style: GoogleFonts.roboto(
                                 textStyle: TextStyle(
                                     fontSize: w * 0.035,
@@ -184,29 +180,28 @@ class _ApprovedlistState extends State<Approvedlist> {
                           height: 0.5,
                           child: ColoredBox(color: Colors.grey),
                         ),
-                        StreamBuilder<List<AddBrand>>(
-                            stream: search.text.isEmpty?getBrands():getSearchBrands(),
+                        StreamBuilder<List<Category>>(
+                            stream:searchController.text.isEmpty?getCategory():getSearchCategory(),
                             builder: (context, snapshot) {
                               print(snapshot.error);
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
                               }
-                              var brands = snapshot.data!;
+                              var data = snapshot.data!;
                               return Expanded(
                                 child: ListView.builder(
-                                    itemCount:brands.length,
+                                    itemCount:data.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
-                                      Timestamp time =Timestamp.fromDate( brands[index].date!);
-                                      Timestamp atime =Timestamp.fromDate( brands[index].acceptedDate!);
-                                      var approveddate = brands[index].acceptedDate;
+
+                                      // Timestamp time = brands[index]['date'];
+                                      // var approveddate = brands[index]['approvedDate'];
                                       return
-                                        brands[index].status!=2?
+                                        data[index].status!=2?
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Container(
-                                            //color: Colors.red.shade50,
                                             child: Column(
                                               mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -222,7 +217,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                           Colors.black),
                                                     ),
                                                     Text(
-                                                      '${brands[index].referNo}',
+                                                      '${data[index].referNo}',
                                                       style: TextStyle(
                                                           color:primaryColor),
                                                     ),
@@ -234,7 +229,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                   MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      sellerName[brands[index].venderId!],
+                                                      sellerName[data[index].vendorId]??'',
                                                       style: TextStyle(
                                                           color:
                                                           Colors.black,
@@ -243,47 +238,8 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                               .bold),
                                                     ),
                                                     Text('Request Date : '+
-                                                        time
-                                                            .toDate()
-                                                            .day
-                                                            .toString() +
-                                                        '/' +
-                                                        time
-                                                            .toDate()
-                                                            .month
-                                                            .toString() +
-                                                        '/' +
-                                                        time
-                                                            .toDate()
-                                                            .year
-                                                            .toString(),
-                                                      style: TextStyle(
-                                                          color:
-                                                          primaryColor,
-                                                          fontWeight: FontWeight
-                                                              .w500),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                                  children: [
-                                                    Text('Accepted Date : '+
-                                                        atime
-                                                            .toDate()
-                                                            .day
-                                                            .toString() +
-                                                        '/' +
-                                                        atime
-                                                            .toDate()
-                                                            .month
-                                                            .toString() +
-                                                        '/' +
-                                                        atime
-                                                            .toDate()
-                                                            .year
-                                                            .toString(),
+                                                        DateFormat("dd-MM-yyyy")
+                                                            .format( data[index].date!),
                                                       style: TextStyle(
                                                           color:
                                                           primaryColor,
@@ -297,15 +253,15 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      brands[index].brand??'',
+                                                      data[index].name??'',
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),
                                                     InkWell(
                                                       onTap: (){
                                                         setState(() {
-                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>BrandViewPage(
-                                                            id:brands[index].brandId??'',
+                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
+                                                            data:data[index],
                                                           )));
                                                         });
                                                       },
@@ -313,10 +269,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                         width: w * 0.285,
                                                         height: h * 0.05,
                                                         decoration: BoxDecoration(
-                                                            color: brands[index].status ==
-                                                                1
-                                                                ? Colors.green
-                                                                : primaryColor,
+                                                            color:  primaryColor,
                                                             borderRadius:
                                                             BorderRadius.all(
                                                                 Radius
@@ -324,7 +277,7 @@ class _ApprovedlistState extends State<Approvedlist> {
                                                                     6))),
                                                         child: Center(
                                                             child: Text(
-                                                              "Approved",
+                                                              "pending",
                                                               style: TextStyle(
                                                                   color:
                                                                   Colors.white),

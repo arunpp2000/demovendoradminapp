@@ -5,9 +5,9 @@ import 'package:flutter_svg/svg.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
-import 'orderDetailsPage.dart';
+import '../../../globals/colors.dart';
+import '../../../login/splashscreen.dart';
+
 
 class PickUpOrders extends StatefulWidget {
   const PickUpOrders({Key? key}) : super(key: key);

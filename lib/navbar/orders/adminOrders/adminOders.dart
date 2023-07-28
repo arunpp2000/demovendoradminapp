@@ -7,10 +7,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
-import '../../widgets/util.dart';
-import 'orderDetailsPage.dart';
+
+import '../../../globals/colors.dart';
+
+import '../../../login/splashscreen.dart';
+import '../../../model/usermodel.dart';
+import '../../../widgets/util.dart';
+import 'b2bAdminOrderDetails.dart';
+import 'b2cadminOrderDetails.dart';
+import '../b2c/orderDetailsPage.dart';
 
 class AdminOrders extends StatefulWidget {
   const AdminOrders({Key? key}) : super(key: key);
@@ -78,7 +83,7 @@ int? index;
     datePicked2 = Timestamp.fromDate(DateTime(time.year, time.month, time.day, 23, 59, 59));
     _b2cSelectedIndex = 0;
     _b2bselectedIndex = 0;
-    _controller = TabController(length:2, vsync: this);
+    // _controller = TabController(length:2, vsync: this);
 print('----------');
     print(_controller?.index);
     _controller?.addListener(() {
@@ -92,12 +97,18 @@ print('----------');
     userStream1 = FirebaseFirestore.instance
         .collection("orders")
         .where('orderStatus', isEqualTo: _b2cSelectedIndex)
+        .where('vendorId',
+        isEqualTo:
+        'bGa7yjwM1DV4hPpbqksXEoh6DEb2')
         .orderBy('placedDate', descending: true)
         .limit(limit)
         .snapshots();
     userStream2 = FirebaseFirestore.instance
         .collection("b2bOrders")
         .where('orderStatus', isEqualTo: _b2bselectedIndex)
+        .where('vendorId',
+        isEqualTo:
+        'bGa7yjwM1DV4hPpbqksXEoh6DEb2')
         .orderBy('placedDate', descending: true)
         .limit(limit)
         .snapshots();
@@ -184,7 +195,8 @@ print('----------');
                         if (value == 'Today') {
                         } else if (value == 'This Week') {
                         } else if (value == 'This Month') {
-                        } else if (value == 'This Year') {}
+                        } else if (value == 'This Year') {
+                        }
                         setState(() {});
                       },
                     )),
@@ -279,9 +291,10 @@ print('----------');
 
                     userStream1 = FirebaseFirestore.instance
                         .collection('orders')
-                        .where('orderStatus', isEqualTo: _b2cSelectedIndex)
-                        .where('placedDate',
-                            isGreaterThanOrEqualTo: datePicked1)
+                        .where('orderStatus', isEqualTo: _b2cSelectedIndex) .where('vendorId',
+                        isEqualTo:
+                        currentUser!.id)
+                        .where('placedDate', isGreaterThanOrEqualTo: datePicked1)
                         .where('placedDate', isLessThanOrEqualTo: datePicked2)
                         .orderBy('placedDate', descending: true)
                         .snapshots();
@@ -348,8 +361,6 @@ print('----------');
                           height: h,
                           width: double.infinity,
                           child: TabBarView(
-
-
                               children: [
                             Column(
                               children: [
@@ -368,7 +379,8 @@ print('----------');
                                                     mainAxisExtent: 45,
                                                     childAspectRatio: 3 / 2,
                                                     crossAxisSpacing: 10,
-                                                    mainAxisSpacing: h * 0.01),
+                                                    mainAxisSpacing: h * 0.01
+                                                ),
                                             itemCount: overview.length,
                                             itemBuilder:
                                                 (BuildContext ctx, index) {
@@ -499,7 +511,9 @@ print('----------');
                                               String shipRocketOrderId;
                                               String awbNumber;
                                               String partner;
-                                              String Id;
+                                              String Id= b2cData[listViewIndex].id;
+                                              print(Id);
+
                                               try {
                                                 partner = b2cData[listViewIndex]
                                                         ['partner']
@@ -514,8 +528,7 @@ print('----------');
                                                         .toDate();
                                                 invoiceNo = b2cData[listViewIndex]
                                                     ['invoiceNo'];
-                                                Id = b2cData[listViewIndex]
-                                                    ['orderId'];
+
                                                 shipRocketOrderId =
                                                     b2cData[listViewIndex]
                                                         ['shipRocketOrderId'];
@@ -537,15 +550,13 @@ print('----------');
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                OrderDetailsPage(
+                                                                AdminOrderDetailsPage(
                                                                   id: b2cData[
                                                                           listViewIndex]
                                                                       .id,
-                                                                  email: userDataMap[
-                                                                          b2cData[listViewIndex]
-                                                                              [
-                                                                              'userId']]
-                                                                      ['email'],
+                                                                  // email: userDataMap[
+                                                                  //         b2cData[listViewIndex]
+                                                                  //         ['userId']]['email'],
                                                                 )));
                                                   },
                                                   child: Container(
@@ -593,12 +604,7 @@ print('----------');
                                                                       primaryColor,
                                                                   child:
                                                                       CachedNetworkImage(
-                                                                    imageUrl: userPhoto[b2cData[listViewIndex]['userId']] ==
-                                                                            ''
-                                                                        ? 'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png'
-                                                                        : userPhoto[b2cData[listViewIndex]
-                                                                            [
-                                                                            'userId']],
+                                                                    imageUrl: userPhoto[b2cData[listViewIndex]['userId']] ?? 'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png',
                                                                   ),
                                                                 ),
                                                               ],
@@ -621,6 +627,7 @@ print('----------');
                                                                         'shippingAddress']
                                                                     ['name'],
                                                                 style: TextStyle(
+                                                                  overflow:TextOverflow.visible ,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold),
@@ -655,7 +662,15 @@ print('----------');
                                                                     .end,
                                                             children: [
                                                               Text(
-                                                                'Order No :' +
+                                                                'Order Id:',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize: w *
+                                                                        0.030),
+                                                              ),
+                                                              Text(
                                                                     Id,
                                                                 style: TextStyle(
                                                                     fontWeight:
@@ -866,7 +881,8 @@ print('----------');
                                               String shipRocketOrderId;
                                               String awbNumber;
                                               String partner;
-                                              String Id;
+                                              String Id=b2bData[listViewIndex]
+                                              ['orderId'];
                                               try {
                                                 partner = b2bData[listViewIndex]
                                                 ['partner']
@@ -881,8 +897,8 @@ print('----------');
                                                         .toDate();
                                                 invoiceNo = b2bData[listViewIndex]
                                                 ['invoiceNo'];
-                                                Id = b2bData[listViewIndex]
-                                                ['orderId'];
+                                                // Id = b2bData[listViewIndex]
+                                                // ['orderId'];
                                                 shipRocketOrderId =
                                                 b2bData[listViewIndex]
                                                 ['shipRocketOrderId'];
@@ -904,15 +920,15 @@ print('----------');
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                OrderDetailsPage(
+                                                                B2bAdminOrderDetailsPage(
                                                                   id: b2bData[
                                                                   listViewIndex]
                                                                       .id,
-                                                                  email: userDataMap[
-                                                                  b2bData[listViewIndex]
-                                                                  [
-                                                                  'userId']]
-                                                                  ['email'],
+                                                                  // email: userDataMap[
+                                                                  // b2bData[listViewIndex]
+                                                                  // [
+                                                                  // 'userId']]
+                                                                  // ['email'],
                                                                 )));
                                                   },
                                                   child: Container(
@@ -960,12 +976,7 @@ print('----------');
                                                                   primaryColor,
                                                                   child:
                                                                   CachedNetworkImage(
-                                                                    imageUrl: userPhoto[b2bData[listViewIndex]['userId']] ==
-                                                                        ''
-                                                                        ? 'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png'
-                                                                        : userPhoto[b2bData[listViewIndex]
-                                                                    [
-                                                                    'userId']],
+                                                                    imageUrl: userPhoto[b2bData[listViewIndex]['userId']] ?? 'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png',
                                                                   ),
                                                                 ),
                                                               ],
@@ -1023,8 +1034,16 @@ print('----------');
                                                                 .end,
                                                             children: [
                                                               Text(
-                                                                'Order No :' +
-                                                                    Id,
+                                                                'Order Id:',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                    fontSize: w *
+                                                                        0.030),
+                                                              ),
+                                                              Text(
+                                                                Id,
                                                                 style: TextStyle(
                                                                     fontWeight:
                                                                     FontWeight

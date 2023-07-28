@@ -1,12 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demovendoradminapp/model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
+import '../../Report/orderGraph.dart';
+import '../../brands/brands.dart';
 import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
+import '../../login/splashscreen.dart';
+import '../../products/productTab.dart';
+
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  final TabController controller;
+
+   Dashboard({Key? key, required this.controller}) : super(key: key);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -21,15 +30,15 @@ class _DashboardState extends State<Dashboard> {
     {"icon": 'assets/chart.svg',
       "text": "Sales"},
     {"icon": 'assets/mypro.svg',
-      "text": "Total Products"},
+      "text": "Products"},
     {"icon": 'assets/mypro.svg',
-      "text": "Total Brands"
+      "text": "Brands"
     },
     {"icon": 'assets/mypro.svg',
-      "text": "Total B2C Customers"
+      "text": "B2C Customers"
     },
     {"icon": 'assets/mypro.svg',
-      "text": "Total B2B Customers"
+      "text": "B2B Customers"
     }
   ];
   List order = [
@@ -88,19 +97,48 @@ class _DashboardState extends State<Dashboard> {
                   SizedBox(
                     width: w * 0.02,
                   ),
-                  Container(
-                    height: h * 0.060,
-                    width: w * 0.3,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(h * 0.01),
-                        color: primaryColor),
-                    child: Center(
-                        child: Text(
-                          "This Week",
-                          style: GoogleFonts.roboto(
-                              textStyle: TextStyle(
-                                  fontSize: h * 0.02, color: Colors.white)),
-                        )),
+                  InkWell(
+                    onTap: (){
+                     //
+                     // FirebaseFirestore.instance.collection('category').get().then((value) {
+                     //   for(DocumentSnapshot a in value.docs){
+                     //     dynamic data=a.data();
+                     //      FirebaseFirestore.instance.collection('category').doc(a.id).update({
+                     //        'status':1,
+                     //        'delete':false,
+                     //      });
+                     //      print(a.id);
+                     //   }
+                     // });
+
+                      // var user=UserModel(
+                      //   status: 1,
+                      //   email: '',
+                      //   bankDetails: {
+                      //
+                      //   },
+                      //   Fullname: 'thara store vendor',
+                      //   id: 'bGa7yjwM1DV4hPpbqksXEoh6DEb2',
+                      //   phone: ''
+                      //
+                      //
+                      // );
+                      // FirebaseFirestore.instance.collection('vendor').doc('bGa7yjwM1DV4hPpbqksXEoh6DEb2').set(user.toJson());
+                    },
+                    child: Container(
+                      height: h * 0.060,
+                      width: w * 0.3,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(h * 0.01),
+                          color: primaryColor),
+                      child: Center(
+                          child: Text(
+                            "This Week",
+                            style: GoogleFonts.roboto(
+                                textStyle: TextStyle(
+                                    fontSize: h * 0.02, color: Colors.white)),
+                          )),
+                    ),
                   ),
                   Column(
                     children: [
@@ -248,6 +286,9 @@ class _DashboardState extends State<Dashboard> {
                     itemBuilder: (BuildContext ctx, index) {
                       return InkWell(
                         onTap: () {
+                          index==0?widget.controller.animateTo(1):SizedBox();
+print(widget.controller);print('touched');
+index==2?Navigator.push(context, MaterialPageRoute(builder: (context)=>AddProductsDetails())):index==3?Navigator.push(context, MaterialPageRoute(builder: (context)=>BrandDetails())):SizedBox();
 
                         },
                         child: Container(
@@ -451,7 +492,7 @@ class _DashboardState extends State<Dashboard> {
                         SizedBox(
                           width: w * 0.02,
                         ),
-                        Text("d")
+                        Text("")
                       ],
                     ),
                   ),
@@ -587,7 +628,7 @@ class _DashboardState extends State<Dashboard> {
                       width: w * 0.02,
                     ),
                     Text(
-                      "Settlement Amount",
+                      "Refferral payouts",
                       style: GoogleFonts.roboto(
                           textStyle: TextStyle(
                               fontSize: h * 0.016,
@@ -597,10 +638,123 @@ class _DashboardState extends State<Dashboard> {
                     SizedBox(
                       width: w * 0.180,
                     ),
-                    Text("d")
+                    Text("")
                   ],
                 ),
               ),
+              SizedBox(
+                height: h * 0.02,
+              ),
+              Container(
+                height: h * 0.07,
+                width: w * 1,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: primaryColor,
+                          blurRadius: 2,
+                          spreadRadius: 0,
+                          offset: Offset(0, 1))
+                    ],
+                    borderRadius: BorderRadius.circular(h * 0.01),
+                    border: Border.all(color: primaryColor)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: w * 0.01,
+                    ),
+                    CircleAvatar(
+                      radius: h * 0.025,
+                      backgroundColor: primaryColor,
+                      child: CircleAvatar(
+                        radius: h * 0.024,
+                        backgroundColor: Colors.white,
+                        child: Text(
+                          "Aff",
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: h * 0.019,
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryColor)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: w * 0.02,
+                    ),
+                    Text(
+                      "Affiliate payouts",
+                      style: GoogleFonts.roboto(
+                          textStyle: TextStyle(
+                              fontSize: h * 0.016,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor)),
+                    ),
+                    SizedBox(
+                      width: w * 0.180,
+                    ),
+                    Text("")
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: h * 0.02,
+              ),
+              Container(
+                height: h * 0.07,
+                width: w * 1,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: primaryColor,
+                          blurRadius: 2,
+                          spreadRadius: 0,
+                          offset: Offset(0, 1))
+                    ],
+                    borderRadius: BorderRadius.circular(h * 0.01),
+                    border: Border.all(color: primaryColor)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: w * 0.01,
+                    ),
+                    CircleAvatar(
+                      radius: h * 0.027,
+                      backgroundColor: primaryColor,
+                      child: CircleAvatar(
+                        radius: h * 0.024,
+                        backgroundColor: Colors.white,
+                        child: Text(
+                          "SEL",
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: h * 0.019,
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryColor)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: w * 0.02,
+                    ),
+                    Text(
+                      "Seller Payout",
+                      style: GoogleFonts.roboto(
+                          textStyle: TextStyle(
+                              fontSize: h * 0.016,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor)),
+                    ),
+                    SizedBox(
+                      width: w * 0.180,
+                    ),
+                    Text("")
+                  ],
+                ),
+              ),
+              // BarChartSample3()
             ]),
           ),
         ),

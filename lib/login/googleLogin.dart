@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../navbar/Navbar.dart';
 
+import '../navbar/Navbar.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
       "display_name": username,
       "email": useremail,
       "delete": false,
-      "verified": false,
+      "verified": true,
       "photo_url": userimage,
       "created_time": FieldValue.serverTimestamp(),
     }).then((value) => {

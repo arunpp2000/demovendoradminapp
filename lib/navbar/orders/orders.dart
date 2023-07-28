@@ -1,19 +1,21 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:demovendoradminapp/navbar/orders/pickUpOrders.dart';
-import 'package:demovendoradminapp/navbar/orders/quoteOrders.dart';
-import 'package:demovendoradminapp/navbar/orders/sellerOrders.dart';
+import 'package:demovendoradminapp/navbar/orders/pickUpOrder/pickUpOrders.dart';
+import 'package:demovendoradminapp/navbar/orders/quoteOrders/quoteOrders.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../globals/colors.dart';
-import 'adminOders.dart';
+import 'sellerOrder/SellerOrder.dart';
+import 'adminOrders/adminOders.dart';
 TabBar get _tabBar=>TabBar(
   physics: ClampingScrollPhysics(),
   isScrollable:true,
   indicatorColor:primaryColor,
   labelColor: Colors.black,
   labelStyle:GoogleFonts.roboto(textStyle:TextStyle(fontSize: 14,fontWeight: FontWeight.bold) ) ,tabs: [
+
   Tab(text: "Admin Orders",),
   Tab(text: "Seller Orders",),
   Tab(text: "PickUp Orders",),

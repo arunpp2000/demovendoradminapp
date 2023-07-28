@@ -1,12 +1,12 @@
 import 'dart:io';
 
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../globals/colors.dart';
+import '../login/splashscreen.dart';
 
 class ImportProductList extends StatefulWidget {
   const ImportProductList({Key? key}) : super(key: key);
@@ -17,6 +17,7 @@ class ImportProductList extends StatefulWidget {
 
 class _ImportProductListState extends State<ImportProductList> {
   Future<void> _pickxlFile() async {
+
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['xlsx'],
@@ -32,9 +33,14 @@ class _ImportProductListState extends State<ImportProductList> {
   }
 
   @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var h = MediaQuery.of(context).size.height;
-    var w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: ListView(children: [
         Padding(

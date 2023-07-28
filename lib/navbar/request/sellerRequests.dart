@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 
 import '../../globals/colors.dart';
-import '../../uesrDetailsPage.dart';
+import 'sellerDetails.dart';
 
 
 class SellerRequests extends StatefulWidget {
@@ -34,11 +34,11 @@ class _SellerRequestsState extends State<SellerRequests> {
         iconTheme: IconThemeData(color: Colors.black),
     leading: IconButton(onPressed: (){
       Navigator.pop(context);
-    }, icon: Icon(Icons.arrow_back)),
+    }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
         title: Text(
           'Seller Request',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontFamily: 'Poppins',
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -266,7 +266,7 @@ class _SellerRequestsState extends State<SellerRequests> {
                                   children: [
                                     InkWell(
                                       onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>UserDetailPage(
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>sellerDetails(
                                           id:data![index]['id'],
                                         )));
                                         },
@@ -584,7 +584,7 @@ class _SellerRequestsState extends State<SellerRequests> {
                                   children: [
                                     InkWell(
                                       onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>UserDetailPage(
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>sellerDetails(
                                           id:data![index]['id'],
                                         )));
                                       },
@@ -903,7 +903,7 @@ class _SellerRequestsState extends State<SellerRequests> {
                                   children: [
                                     InkWell(
                                       onTap: (){
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>UserDetailPage(
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>sellerDetails(
                                           id:data![index]['id'],
                                         )));
                                       },
@@ -935,7 +935,7 @@ class _SellerRequestsState extends State<SellerRequests> {
                                                         shape: BoxShape.circle,
                                                       ),
                                                       child: CachedNetworkImage(
-                                                        imageUrl: data![index]['photoUrl']==''?'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png':data[index]['photoUrl'],
+                                                        imageUrl: data![index]['photoUrl']==''?'https://cdn1.iconfinder.com/data/icons/ecommerce-gradient/512/ECommerce_Website_App_Online_Shop_Gradient_greenish_lineart_Modern_profile_photo_person_contact_account_buyer_seller-512.png':data![index]['photoUrl']
 
                                                       )
                                                   ),

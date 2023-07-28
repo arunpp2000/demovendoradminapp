@@ -3,8 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
+import '../../brands/brands.dart';
+import '../../category/cateogryTab.dart';
 import '../../globals/colors.dart';
-import '../../login/otplogin.dart';
+import '../../login/splashscreen.dart';
+import '../../products/productTab.dart';
+
 
 class Manage extends StatefulWidget {
   const Manage({Key? key}) : super(key: key);
@@ -177,37 +181,42 @@ class _ManageState extends State<Manage> {
                               mainAxisSpacing: 20),
                       itemCount: manage.length,
                       itemBuilder: (BuildContext ctx, index) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            left: w * 0.05,
-                          ),
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                  radius: w * 0.070,
-                                  backgroundColor: manage[index]
-                                      ["color"],
-                                  child: SvgPicture.asset(
-                                    manage[index]["image"],
-                                    height: h * 0.03,
-                                  )),
-                              SizedBox(
-                                height: h * 0.01,
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsets.only(left: w * 0.02),
-                                child: Text(
-                                  manage[index]["Text"],
-                                  style: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                          fontSize: h * 0.011,
-                                          fontWeight: FontWeight.bold)),
+                        return InkWell(
+                          onTap: (){
+                            index==0?Navigator.push(context, MaterialPageRoute(builder: (context)=>AddProductsDetails())):index==1?Navigator.push(context, MaterialPageRoute(builder: (context)=>BrandDetails())):index==2?Navigator.push(context, MaterialPageRoute(builder: (context)=>CatogoryTabs())):SizedBox();
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: w * 0.05,
+                            ),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                    radius: w * 0.070,
+                                    backgroundColor: manage[index]
+                                        ["color"],
+                                    child: SvgPicture.asset(
+                                      manage[index]["image"],
+                                      height: h * 0.03,
+                                    )),
+                                SizedBox(
+                                  height: h * 0.01,
                                 ),
-                              )
-                            ],
+                                Padding(
+                                  padding:
+                                      EdgeInsets.only(left: w * 0.02),
+                                  child: Text(
+                                    manage[index]["Text"],
+                                    style: GoogleFonts.roboto(
+                                        textStyle: TextStyle(
+                                            fontSize: h * 0.011,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         );
                       }),
