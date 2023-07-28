@@ -261,9 +261,8 @@ setState(() {
                                                       onTap: (){
                                                         setState(() {
                                                           Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
-
                                                             id:data[index].categoryId,
-                                                            data:data[index],
+
                                                           )));
                                                         });
                                                       },

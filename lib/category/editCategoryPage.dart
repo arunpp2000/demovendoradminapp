@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../globals/colors.dart';
 
+import '../login/splashscreen.dart';
 import '../model/brandModel.dart';
 import '../model/cateogryModel.dart';
 import '../model/usermodel.dart';
@@ -24,7 +25,9 @@ import 'editCategory.dart';
 
 class CategoryEdit extends StatefulWidget {
   var id;
-  CategoryEdit({Key? key, this.id});
+
+
+  CategoryEdit({Key? key, required this.id, });
 
   @override
   State<CategoryEdit> createState() => _CategoryEditState();
@@ -215,45 +218,48 @@ String? catogoryUrl;
 
   int selectedIndex = 0;
   var data;
+  getCategory(){
+    FirebaseFirestore.instance
+        .collection('category')
+        .doc(widget.id)
+        .get().then((value) {
+      data=value.data();
+      try{
+        catogoryUrl= data!['imageUrl'];
+        bannerUrl= data!['banner'];
+        catorgory.text=data!['name'];
+        description.text=data!['description'];
+        product_Brand.text=data!['brand'];
+        madeIn.text=data!['madeIn'];
+        catorgory_badgeText.text=data!['categoryBadge'];
+        parentId.text=parentCatIdToName[data['parentId']];
+      }catch(e){
+
+      }
+
+      setState(() {
+
+      });
+
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getCategory();
   }
 
   @override
   Widget build(BuildContext context) {
-    var h = MediaQuery.of(context).size.height;
-    var w = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: Column(
+      body: data==null?Center(child: CircularProgressIndicator(),):Column(
         children: [
           SizedBox(
             height: h * 0.01,
           ),
-          StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('category')
-                  .doc(widget.id)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                      child:
-                      CircularProgressIndicator());
-                }
-                data = snapshot.data;
-                print(data);
-                try{
-                  catorgory.text=data!['name'];
-                  description.text=data!['description'];
-                  product_Brand.text=data!['brand'];
-                  madeIn.text=data!['madeIn'];
-                  catorgory_badgeText.text=data!['categoryBadge'];
-                  catogoryUrl=data['imageUrl'];
-                  parentId.text=parentCatIdToName[data['parentId']];
-                }catch(e){
-                }
-                return Column(
+          Column(
                   crossAxisAlignment:
                   CrossAxisAlignment.start,
                   children: [
@@ -373,7 +379,7 @@ String? catogoryUrl;
                             ),
                             child: CachedNetworkImage(
                               imageUrl:
-                              data!['banner'],
+                              bannerUrl??'',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -677,17 +683,22 @@ String? catogoryUrl;
 
                           bool pressed=await alert(context, 'Do you want update?');
                           if(pressed){
-                            FirebaseFirestore.instance.collection('category').doc(widget.id).update({
+                          await  FirebaseFirestore.instance.collection('category').doc(widget.id).update({
                               'banner':bannerUrl,
                               'imageUrl':catogoryUrl,
                               "name":catorgory.text,
                               "description":description.text,
                               "brand":product_Brand.text,
                               "madeIn":madeIn.text,
-                              "categoryBadge":catorgory_badgeText,
+                              "categoryBadge":catorgory_badgeText.text,
                               "search":setSearchParam(catorgory.text),
                               'parentId':parentCategoryNametoId[parentId.text] ,
+                            }).then((value) {
+                              showUploadMessage(context, 'Updated');
+                              Navigator.pop(context);
                             });
+
+
                           }
                         }else{
                           catogoryUrl==''?     errorMsg(context,'please upload Gallery Image.'):
@@ -720,8 +731,8 @@ String? catogoryUrl;
                       ),
                     ),
                   ],
-                );
-              }),
+                ),
+
         ],
       ));
 

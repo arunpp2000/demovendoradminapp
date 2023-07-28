@@ -2,22 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../globals/colors.dart';
-import '../model/cateogryModel.dart';
-import '../model/usermodel.dart';
-import 'addCategory.dart';
-import 'categoryDetails.dart';
+import '../../category/addCategory.dart';
+import '../../category/categoryDetails.dart';
+import '../../globals/colors.dart';
+import '../../model/cateogryModel.dart';
 
 
 
-class CategoryRequest extends StatefulWidget {
+
+class CategoryPending extends StatefulWidget {
   AddCategory? CategoryData;
-  CategoryRequest({Key? key, this.CategoryData});
+  CategoryPending({Key? key, this.CategoryData});
   @override
-  State<CategoryRequest> createState() => _CategoryRequestState();
+  State<CategoryPending> createState() => _CategoryRequestState();
 }
 
-class _CategoryRequestState extends State<CategoryRequest> {
+class _CategoryRequestState extends State<CategoryPending> {
 
 
   TextEditingController searchController =TextEditingController();
@@ -41,12 +41,11 @@ class _CategoryRequestState extends State<CategoryRequest> {
   Map sellerId={};
   getSellerName(){
     FirebaseFirestore.instance.collection('vendor').get().then((value){
+
       for(DocumentSnapshot a in value.docs){
         sellerName[a.id]=a.get('name');
       }
-      setState(() {
 
-      });
     });
   }
   @override
@@ -55,12 +54,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
     super.initState();
     getSellerName();
   }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    searchController.dispose();
-  }
+
   @override
   Widget build(BuildContext context) {
     var h = MediaQuery
@@ -72,6 +66,11 @@ class _CategoryRequestState extends State<CategoryRequest> {
         .size
         .width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: primaryColor,
+        title: Text('Category Request',style: TextStyle(color: Colors.white),),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Column(children: [
 
@@ -92,7 +91,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(5)),
                     child: Center(
-                      child: TextFormField(
+                      child: TextField(
                         controller: searchController,
                         onChanged: (v){
                           setState(() {
@@ -102,7 +101,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         decoration: InputDecoration(
                           hintStyle: TextStyle(
                               fontSize: w * 0.030, color: Colors.black),
-                          hintText: 'Search Category',
+                          hintText: 'Search Product',
                           contentPadding: EdgeInsets.only(top: 1),
                           prefixIcon: Icon(
                             Icons.search,
@@ -199,101 +198,110 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                       // var approveddate = brands[index]['approvedDate'];
                                       return
                                         data[index].status!=2?
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                                  children: [
-                                                    Text(
-                                                      'Ref No:',
-                                                      style: TextStyle(
-                                                          color:
-                                                          Colors.black),
-                                                    ),
-                                                    Text(
-                                                      '${data[index].referNo}',
-                                                      style: TextStyle(
-                                                          color:primaryColor),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5,),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      sellerName[data[index].vendorId]??'',
-                                                      style: TextStyle(
-                                                          color:
-                                                          Colors.black,
-                                                          fontWeight:
-                                                          FontWeight
-                                                              .bold),
-                                                    ),
-                                                    Text('Request Date : '+
-                                                        DateFormat("dd-MM-yyyy")
-                                                            .format( data[index].date!),
-                                                      style: TextStyle(
-                                                          color:
-                                                          primaryColor,
-                                                          fontWeight: FontWeight
-                                                              .w500),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5,),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      data[index].name??'',
-                                                      style: TextStyle(
-                                                          color: Colors.black),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: (){
-                                                        setState(() {
-                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
-                                                            id:data[index].categoryId,
-                                                          )));
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        width: w * 0.285,
-                                                        height: h * 0.05,
-                                                        decoration: BoxDecoration(
-                                                            color:  primaryColor,
-                                                            borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius
-                                                                    .circular(
-                                                                    6))),
-                                                        child: Center(
-                                                            child: Text(
-                                                              "pending",
-                                                              style: TextStyle(
-                                                                  color:
-                                                                  Colors.white),
-                                                            )),
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
+                                              id:data[index].categoryId,
+                                            )));
+                                            setState(() {
+                                            });
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                    children: [
+                                                      Text(
+                                                        'Ref No:',
+                                                        style: TextStyle(
+                                                            color:
+                                                            Colors.black),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 5,),
-                                                SizedBox(
-                                                  width: 320,
-                                                  height: 0.5,
-                                                  child: ColoredBox(
-                                                      color: Colors.grey),
-                                                ),
-                                              ],
+                                                      Text(
+                                                        '${data[index].referNo}',
+                                                        style: TextStyle(
+                                                            color:primaryColor),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 5,),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        sellerName[data[index].vendorId]??'',
+                                                        style: TextStyle(
+                                                            color:
+                                                            Colors.black,
+                                                            fontWeight:
+                                                            FontWeight
+                                                                .bold),
+                                                      ),
+                                                      Text('Request Date : '+
+                                                          DateFormat("dd-MM-yyyy")
+                                                              .format( data[index].date!),
+                                                        style: TextStyle(
+                                                            color:
+                                                            primaryColor,
+                                                            fontWeight: FontWeight
+                                                                .w500),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 5,),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        data[index].name??'',
+                                                        style: TextStyle(
+                                                            color: Colors.black),
+                                                      ),
+                                                      InkWell(
+                                                        onTap: (){
+                                                          setState(() {
+                                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
+                                                              id:data[index].categoryId,
+                                                            )));
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          width: w * 0.285,
+                                                          height: h * 0.05,
+                                                          decoration: BoxDecoration(
+                                                              color:  primaryColor,
+                                                              borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                      6))),
+                                                          child: Center(
+                                                              child: Text(
+                                                                "pending",
+                                                                style: TextStyle(
+                                                                    color:
+                                                                    Colors.white),
+                                                              )),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 5,),
+                                                  SizedBox(
+                                                    width: 320,
+                                                    height: 0.5,
+                                                    child: ColoredBox(
+                                                        color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ):Container();

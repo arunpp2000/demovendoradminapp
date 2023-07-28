@@ -1,80 +1,85 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import '../category/cateogryTab.dart';
 import '../globals/colors.dart';
-import '../model/cateogryModel.dart';
+import '../main.dart';
+import '../model/brandModel.dart';
 import '../model/usermodel.dart';
-import 'addCategory.dart';
-import 'categoryDetails.dart';
+import '../navbar/tabbarview/seller_dashboard.dart';
+import 'AddBrand.dart';
+import 'Edit.dart';
+import 'brandViewPage.dart';
+import 'brands.dart';
+class SellerBrands extends StatefulWidget {
+  AddBrand? brandData;
 
 
 
-class CategoryRequest extends StatefulWidget {
-  AddCategory? CategoryData;
-  CategoryRequest({Key? key, this.CategoryData});
+  SellerBrands({Key? key, this.brandData});
+
   @override
-  State<CategoryRequest> createState() => _CategoryRequestState();
+  State<SellerBrands> createState() => _SellerBrandsState();
 }
 
-class _CategoryRequestState extends State<CategoryRequest> {
-
-
-  TextEditingController searchController =TextEditingController();
-
-  Stream<List<Category>> getCategory() =>
-      FirebaseFirestore.instance
-          .collection('category').where('status',isEqualTo: 0)
-          .where('delete', isEqualTo: false).orderBy('date')
-          .snapshots()
-          .map((snapshot) =>
-          snapshot.docs.map((doc) => Category.fromJson(doc.data())).toList());
-  Stream<List<Category>> getSearchCategory() =>
-      FirebaseFirestore.instance
-          .collection('category').where('status',isEqualTo: 0)
-          .where('delete', isEqualTo: false)
-          .where('search',arrayContains:searchController.text.toUpperCase())
-          .snapshots()
-          .map((snapshot) =>
-          snapshot.docs.map((doc) => Category.fromJson(doc.data())).toList());
+class _SellerBrandsState extends State<SellerBrands> {
+  TextEditingController search = TextEditingController();
+  Stream<List<AddBrand>> getBrands() => FirebaseFirestore.instance
+      .collection('brands')
+      .where('delete', isEqualTo: false)
+      .where('vendorId',isNotEqualTo:currentUser?.id)
+      .where('status', isEqualTo: 1)
+      .snapshots()
+      .map((snapshot) =>
+      snapshot.docs.map((doc) => AddBrand.fromJson(doc.data())).toList());
+  Stream<List<AddBrand>> getSearchBrands() => FirebaseFirestore.instance
+      .collection('brands')
+      .where('delete', isEqualTo: false)
+      .where('vendorId',isNotEqualTo:currentUser?.id)
+      .where('status', isEqualTo: 1).where('search',arrayContains: search.text.toUpperCase())
+      .snapshots()
+      .map((snapshot) =>
+      snapshot.docs.map((doc) => AddBrand.fromJson(doc.data())).toList());
+  int brandRef=0;
+  getBrandRef(){
+    FirebaseFirestore.instance.collection('settings').doc('referenceNo').get().then((value) {
+      brandRef=value['brandRef'];
+      if(mounted){
+        setState(() {
+        });
+      }
+    });
+  }
   Map sellerName={};
   Map sellerId={};
   getSellerName(){
     FirebaseFirestore.instance.collection('vendor').get().then((value){
+
       for(DocumentSnapshot a in value.docs){
         sellerName[a.id]=a.get('name');
       }
-      setState(() {
+setState(() {
 
-      });
+});
     });
   }
+
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
+    getBrandRef();
     getSellerName();
   }
   @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    searchController.dispose();
-  }
-  @override
   Widget build(BuildContext context) {
-    var h = MediaQuery
-        .of(context)
-        .size
-        .height;
-    var w = MediaQuery
-        .of(context)
-        .size
-        .width;
+    var h = MediaQuery.of(context).size.height;
+    var w = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(children: [
-
           Padding(
             padding:
             EdgeInsets.only(top: h * 0.02, left: w * 0.04, right: w * 0.04),
@@ -83,6 +88,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                 height: h * 0.01,
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     height: h * 0.04,
@@ -93,8 +99,8 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Center(
                       child: TextFormField(
-                        controller: searchController,
-                        onChanged: (v){
+                        controller: search,
+                        onFieldSubmitted: (v){
                           setState(() {
 
                           });
@@ -102,7 +108,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         decoration: InputDecoration(
                           hintStyle: TextStyle(
                               fontSize: w * 0.030, color: Colors.black),
-                          hintText: 'Search Category',
+                          hintText: 'Search Product',
                           contentPadding: EdgeInsets.only(top: 1),
                           prefixIcon: Icon(
                             Icons.search,
@@ -144,7 +150,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                 ],
               ),
               SizedBox(
-                height: h * 0.01,
+                height: h * 0.02,
               ),
               Container(
                 width: w,
@@ -167,7 +173,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text("Category Approval",
+                        Text("Admin Brands",
                             style: GoogleFonts.roboto(
                                 textStyle: TextStyle(
                                     fontSize: w * 0.035,
@@ -180,28 +186,29 @@ class _CategoryRequestState extends State<CategoryRequest> {
                           height: 0.5,
                           child: ColoredBox(color: Colors.grey),
                         ),
-                        StreamBuilder<List<Category>>(
-                            stream:searchController.text.isEmpty?getCategory():getSearchCategory(),
+                        StreamBuilder<List<AddBrand>>(
+                            stream:search.text.isEmpty? getBrands():getSearchBrands(),
                             builder: (context, snapshot) {
                               print(snapshot.error);
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
                               }
-                              var data = snapshot.data!;
+                              var brands = snapshot.data!;
                               return Expanded(
                                 child: ListView.builder(
-                                    itemCount:data.length,
+                                    itemCount:brands.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
-
-                                      // Timestamp time = brands[index]['date'];
-                                      // var approveddate = brands[index]['approvedDate'];
+                                      Timestamp time =Timestamp.fromDate( brands[index].date!);
+                                      Timestamp atime =Timestamp.fromDate( brands[index].acceptedDate!);
+                                      var approveddate = brands[index].acceptedDate;
                                       return
-                                        data[index].status!=2?
+                                        brands[index].status!=2?
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Container(
+                                            //color: Colors.red.shade50,
                                             child: Column(
                                               mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -217,7 +224,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                           Colors.black),
                                                     ),
                                                     Text(
-                                                      '${data[index].referNo}',
+                                                      '${brands[index].referNo}',
                                                       style: TextStyle(
                                                           color:primaryColor),
                                                     ),
@@ -229,7 +236,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                   MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      sellerName[data[index].vendorId]??'',
+                                                      sellerName[brands[index].venderId!],
                                                       style: TextStyle(
                                                           color:
                                                           Colors.black,
@@ -238,8 +245,47 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                               .bold),
                                                     ),
                                                     Text('Request Date : '+
-                                                        DateFormat("dd-MM-yyyy")
-                                                            .format( data[index].date!),
+                                                        time
+                                                            .toDate()
+                                                            .day
+                                                            .toString() +
+                                                        '/' +
+                                                        time
+                                                            .toDate()
+                                                            .month
+                                                            .toString() +
+                                                        '/' +
+                                                        time
+                                                            .toDate()
+                                                            .year
+                                                            .toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                          primaryColor,
+                                                          fontWeight: FontWeight
+                                                              .w500),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                                  children: [
+                                                    Text('Accepted Date : '+
+                                                        atime
+                                                            .toDate()
+                                                            .day
+                                                            .toString() +
+                                                        '/' +
+                                                        atime
+                                                            .toDate()
+                                                            .month
+                                                            .toString() +
+                                                        '/' +
+                                                        atime
+                                                            .toDate()
+                                                            .year
+                                                            .toString(),
                                                       style: TextStyle(
                                                           color:
                                                           primaryColor,
@@ -253,15 +299,15 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      data[index].name??'',
+                                                      brands[index].brand??'',
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),
                                                     InkWell(
                                                       onTap: (){
                                                         setState(() {
-                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CategoryViewPage(
-                                                            id:data[index].categoryId,
+                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>BrandViewPage(
+                                                            id:brands[index].brandId??'',
                                                           )));
                                                         });
                                                       },
@@ -269,7 +315,10 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                         width: w * 0.285,
                                                         height: h * 0.05,
                                                         decoration: BoxDecoration(
-                                                            color:  primaryColor,
+                                                            color: brands[index].status ==
+                                                                1
+                                                                ? Colors.green
+                                                                : primaryColor,
                                                             borderRadius:
                                                             BorderRadius.all(
                                                                 Radius
@@ -277,7 +326,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                                     6))),
                                                         child: Center(
                                                             child: Text(
-                                                              "pending",
+                                                              "View",
                                                               style: TextStyle(
                                                                   color:
                                                                   Colors.white),
@@ -317,7 +366,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                     topLeft: Radius.circular(w * 0.04),
                     topRight: Radius.circular(w * 0.04))),
           )
-        ]),
+        ])
       ),
     );
   }

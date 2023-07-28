@@ -28,7 +28,7 @@ class CategoryViewPage extends StatefulWidget {
   var id;
 
   var data;
-  CategoryViewPage({Key? key, this.id, required this.data});
+  CategoryViewPage({Key? key, this.id,});
 
   @override
   State<CategoryViewPage> createState() => _CategoryViewPageState();
@@ -215,9 +215,35 @@ class _CategoryViewPageState extends State<CategoryViewPage> {
 
   int selectedIndex = 0;
 var data;
+
+getCategory(){
+  FirebaseFirestore.instance
+      .collection('category')
+      .doc(widget.id)
+      .get().then((value) {
+        data=value.data();
+        try{
+          catorgory.text=data!['name'];
+          description.text=data!['description'];
+          product_Brand.text=data!['brand'];
+          madeIn.text=data!['madeIn'];
+          catorgory_badgeText.text=data!['categoryBadge'];
+          parentId.text=parentCatIdToName[data['parentId']];
+        }catch(e){
+
+        }
+
+        setState(() {
+
+        });
+
+  });
+}
+
   @override
   void initState() {
     super.initState();
+    getCategory();
   }
 
   @override
@@ -229,7 +255,7 @@ var data;
         automaticallyImplyLeading: true,
         backgroundColor: primaryColor,
       ),
-      body: ListView(children: [
+      body:data==null?Center(child: CircularProgressIndicator()): ListView(children: [
         SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Padding(
@@ -292,31 +318,7 @@ var data;
                                         right: 15,
                                         top: 10,
                                         bottom: 10),
-                                    child: StreamBuilder<DocumentSnapshot>(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('category')
-                                            .doc(widget.id)
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          if (!snapshot.hasData) {
-                                            return Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          }
-                                       data = snapshot.data;
-                                          print(data);
-                                          try{
-                                            catorgory.text=data!['name'];
-                                            description.text=data!['description'];
-                                            product_Brand.text=data!['brand'];
-                                            madeIn.text=data!['madeIn'];
-                                            catorgory_badgeText.text=data!['categoryBadge'];
-                                            parentId.text=parentCatIdToName[data['parentId']];
-                                            // brandtitle.text=data!['head'];
-                                          }catch(e){
-
-                                          }
-                                          return Column(
+                                    child:Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -733,7 +735,9 @@ var data;
                                                               context,
                                                               'Do you want accept this category.');
                                                           if (pressed) {
-                                                            data.reference
+                                                            FirebaseFirestore.instance
+                                                                .collection('category')
+                                                                .doc(widget.id)
                                                                 .update({
                                                               'status': 1,
                                                               'acceptedDate':
@@ -753,7 +757,9 @@ var data;
                                                               context,
                                                               'Do you want reject this category.');
                                                           if (pressed) {
-                                                            data.reference
+                                                            FirebaseFirestore.instance
+                                                                .collection('category')
+                                                                .doc(widget.id)
                                                                 .update({
                                                               'status': 2,
                                                               'rejectedDate':
@@ -776,7 +782,9 @@ var data;
                                                                 context,
                                                                 'Do you want reject this category.');
                                                             if (pressed) {
-                                                              data.reference
+                                                              FirebaseFirestore.instance
+                                                                  .collection('category')
+                                                                  .doc(widget.id)
                                                                   .update({
                                                                 'status': 2,
                                                                 'rejectedDate':
@@ -798,7 +806,9 @@ var data;
                                                                 context,
                                                                 'Do you want accept this category.');
                                                             if (pressed) {
-                                                              data.reference
+                                                              FirebaseFirestore.instance
+                                                                  .collection('category')
+                                                                  .doc(widget.id)
                                                                   .update({
                                                                 'status': 1,
                                                                 'acceptedDate':
@@ -814,8 +824,8 @@ var data;
                                                           }, color: primaryColor,),
                                                         ),
                                             ],
-                                          );
-                                        }),
+                                          ),
+
                                   ),
                                   CategoryEdit(id:widget.id)
                                 ],

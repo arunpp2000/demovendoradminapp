@@ -10,29 +10,29 @@ import 'categoryDetails.dart';
 
 
 
-class CategoryRequest extends StatefulWidget {
+class SellerCategory extends StatefulWidget {
   AddCategory? CategoryData;
-  CategoryRequest({Key? key, this.CategoryData});
+  SellerCategory({Key? key, this.CategoryData});
   @override
-  State<CategoryRequest> createState() => _CategoryRequestState();
+  State<SellerCategory> createState() => _SellerCategoryState();
 }
 
-class _CategoryRequestState extends State<CategoryRequest> {
+class _SellerCategoryState extends State<SellerCategory> {
 
 
   TextEditingController searchController =TextEditingController();
 
   Stream<List<Category>> getCategory() =>
       FirebaseFirestore.instance
-          .collection('category').where('status',isEqualTo: 0)
-          .where('delete', isEqualTo: false).orderBy('date')
+          .collection('category').where('status',isEqualTo: 1)
+          .where('delete', isEqualTo: false).where('vendorId',isNotEqualTo: currentUser!.id)
           .snapshots()
           .map((snapshot) =>
           snapshot.docs.map((doc) => Category.fromJson(doc.data())).toList());
   Stream<List<Category>> getSearchCategory() =>
       FirebaseFirestore.instance
-          .collection('category').where('status',isEqualTo: 0)
-          .where('delete', isEqualTo: false)
+          .collection('category').where('status',isEqualTo: 1)
+          .where('delete', isEqualTo: false).where('vendorId',isNotEqualTo: currentUser!.id)
           .where('search',arrayContains:searchController.text.toUpperCase())
           .snapshots()
           .map((snapshot) =>
@@ -41,12 +41,13 @@ class _CategoryRequestState extends State<CategoryRequest> {
   Map sellerId={};
   getSellerName(){
     FirebaseFirestore.instance.collection('vendor').get().then((value){
+
       for(DocumentSnapshot a in value.docs){
         sellerName[a.id]=a.get('name');
       }
-      setState(() {
+setState(() {
 
-      });
+});
     });
   }
   @override
@@ -61,6 +62,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
     super.dispose();
     searchController.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     var h = MediaQuery
@@ -94,7 +96,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                     child: Center(
                       child: TextFormField(
                         controller: searchController,
-                        onChanged: (v){
+                        onFieldSubmitted: (v){
                           setState(() {
 
                           });
@@ -167,7 +169,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text("Category Approval",
+                        Text("Seller Category",
                             style: GoogleFonts.roboto(
                                 textStyle: TextStyle(
                                     fontSize: w * 0.035,
@@ -183,7 +185,6 @@ class _CategoryRequestState extends State<CategoryRequest> {
                         StreamBuilder<List<Category>>(
                             stream:searchController.text.isEmpty?getCategory():getSearchCategory(),
                             builder: (context, snapshot) {
-                              print(snapshot.error);
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
@@ -194,11 +195,10 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                     itemCount:data.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
-
                                       // Timestamp time = brands[index]['date'];
                                       // var approveddate = brands[index]['approvedDate'];
                                       return
-                                        data[index].status!=2?
+
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Container(
@@ -229,7 +229,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                   MainAxisAlignment.spaceBetween,
                                                   children: [
                                                     Text(
-                                                      sellerName[data[index].vendorId]??'',
+                                                      sellerName[data[index].vendorId??''],
                                                       style: TextStyle(
                                                           color:
                                                           Colors.black,
@@ -237,9 +237,9 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                           FontWeight
                                                               .bold),
                                                     ),
-                                                    Text('Request Date : '+
+                                                    Text('Rejected Date : '+
                                                         DateFormat("dd-MM-yyyy")
-                                                            .format( data[index].date!),
+                                                            .format( data[index].rejectedDate!),
                                                       style: TextStyle(
                                                           color:
                                                           primaryColor,
@@ -277,7 +277,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                                                     6))),
                                                         child: Center(
                                                             child: Text(
-                                                              "pending",
+                                                              "view",
                                                               style: TextStyle(
                                                                   color:
                                                                   Colors.white),
@@ -296,7 +296,7 @@ class _CategoryRequestState extends State<CategoryRequest> {
                                               ],
                                             ),
                                           ),
-                                        ):Container();
+                                        );
                                     }),
                               );
                             }),
